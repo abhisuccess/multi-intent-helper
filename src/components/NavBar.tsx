@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
 import { Menu, X, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Replace with actual auth state
+  const { user } = useAuth();
   
   useEffect(() => {
     const handleScroll = () => {
@@ -63,10 +64,12 @@ const NavBar = () => {
         
         {/* Action Buttons */}
         <div className="flex items-center gap-4">
-          {isLoggedIn ? (
-            <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
-              <User className="h-5 w-5" />
-            </Button>
+          {user ? (
+            <Link to="/dashboard">
+              <Button variant="ghost" size="icon" className="rounded-full" aria-label="User menu">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
           ) : (
             <Link to="/auth">
               <Button className="hidden md:inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
@@ -114,13 +117,22 @@ const NavBar = () => {
               >
                 About
               </a>
-              {!isLoggedIn && (
+              {!user && (
                 <Link 
                   to="/auth" 
                   className="text-sm font-medium py-2 px-4 rounded-md bg-primary text-primary-foreground"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Login
+                </Link>
+              )}
+              {user && (
+                <Link 
+                  to="/dashboard" 
+                  className="text-sm font-medium py-2 px-4 rounded-md bg-primary text-primary-foreground"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
                 </Link>
               )}
             </nav>

@@ -1,24 +1,23 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check, XCircle, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
-  const navigate = useNavigate();
+  const { signIn, signUp, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
   
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!email || !password) {
@@ -30,22 +29,10 @@ const Auth = () => {
       return;
     }
     
-    setLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // For demo purposes - in a real app this would validate against a database
-      localStorage.setItem('isAuthenticated', 'true');
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to MultiIntent AI!",
-      });
-      navigate('/dashboard');
-      setLoading(false);
-    }, 1500);
+    await signIn(email, password);
   };
   
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name || !email || !password) {
@@ -57,19 +44,7 @@ const Auth = () => {
       return;
     }
     
-    setLoading(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // For demo purposes - in a real app this would create a user in a database
-      localStorage.setItem('isAuthenticated', 'true');
-      toast({
-        title: "Registration Successful",
-        description: "Welcome to MultiIntent AI!",
-      });
-      navigate('/dashboard');
-      setLoading(false);
-    }, 1500);
+    await signUp(email, password, name);
   };
 
   return (

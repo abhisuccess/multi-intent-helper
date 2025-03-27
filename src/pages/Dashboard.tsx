@@ -6,14 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from '@/components/ui/use-toast';
 import QueryAnalyzer from '@/components/QueryAnalyzer';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
 
   React.useEffect(() => {
-    // Simulating auth check - in a real app this would check an actual auth state
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
+    // Redirect if not authenticated
+    if (!loading && !user) {
       toast({
         title: "Authentication Required",
         description: "Please login to access the dashboard",
@@ -21,7 +22,15 @@ const Dashboard = () => {
       });
       navigate('/auth');
     }
-  }, [navigate]);
+  }, [navigate, user, loading]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!user) {
+    return null; // This will be handled by the useEffect redirect
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
@@ -33,16 +42,12 @@ const Dashboard = () => {
             </a>
           </div>
           <div className="flex items-center gap-4">
+            <div className="text-sm mr-4">
+              Welcome, {user.user_metadata?.full_name || user.email}
+            </div>
             <Button 
               variant="ghost" 
-              onClick={() => {
-                localStorage.removeItem('isAuthenticated');
-                navigate('/');
-                toast({
-                  title: "Logged Out",
-                  description: "You have been successfully logged out",
-                });
-              }}
+              onClick={signOut}
             >
               Logout
             </Button>
