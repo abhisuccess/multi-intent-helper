@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { useAuth } from '@/contexts/AuthContext';
 
 type ContactSubmission = {
   id: string;
@@ -15,8 +16,11 @@ type ContactSubmission = {
 const ContactSubmissions = () => {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
+    if (!isAdmin) return; // Only fetch if user is admin
+
     const fetchSubmissions = async () => {
       try {
         const { data, error } = await supabase
@@ -58,7 +62,11 @@ const ContactSubmissions = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [isAdmin]);
+
+  if (!isAdmin) {
+    return null; // Don't render anything if not admin
+  }
 
   if (loading) {
     return (

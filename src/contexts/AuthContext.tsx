@@ -9,6 +9,7 @@ type AuthContextType = {
   session: Session | null;
   user: User | null;
   loading: boolean;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -20,13 +21,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+
+  // Check if user email is admin
+  const checkAdminStatus = (email: string | undefined) => {
+    // This is a simple example - in production, you should use a proper role system
+    // For this example, we'll check if the email contains "admin" or is one of the predefined admin emails
+    const adminEmails = ['admin@example.com', 'abhisuccess499@gmail.com', 'piyushkumar2122002@gmail.com'];
+    return email ? (email.includes('admin') || adminEmails.includes(email.toLowerCase())) : false;
+  };
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setIsAdmin(checkAdminStatus(session?.user?.email));
       setLoading(false);
     });
 
@@ -34,6 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setIsAdmin(checkAdminStatus(session?.user?.email));
       setLoading(false);
     });
 
@@ -127,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ session, user, loading, isAdmin, signIn, signUp, signOut }}>
       {children}
     </AuthContext.Provider>
   );

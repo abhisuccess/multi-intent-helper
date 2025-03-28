@@ -6,9 +6,10 @@ import ContactSubmissions from '@/components/ContactSubmissions';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 import NavBar from '@/components/NavBar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Dashboard: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,11 +39,26 @@ const Dashboard: React.FC = () => {
           <div className="bg-card rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-semibold mb-4">Welcome, {user.email}</h2>
             <p className="text-muted-foreground">
-              This is your admin dashboard for Multi-Intent AI. Here you can view and manage contact form submissions.
+              This is your dashboard for Multi-Intent AI.
+              {isAdmin ? ' As an admin, you can view and manage contact form submissions.' : ' Here you can access your personalized features.'}
             </p>
           </div>
 
-          <ContactSubmissions />
+          {isAdmin ? (
+            <ContactSubmissions />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>User Dashboard</CardTitle>
+                <CardDescription>Your personalized dashboard</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Welcome to your Multi-Intent AI dashboard. This area will show your personalized content and features.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
