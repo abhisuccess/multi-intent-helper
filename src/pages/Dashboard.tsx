@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import ContactSubmissions from '@/components/ContactSubmissions';
@@ -9,14 +9,28 @@ import NavBar from '@/components/NavBar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Dashboard: React.FC = () => {
-  const { user, signOut, isAdmin } = useAuth();
+  const { user, signOut, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/auth');
+    // Only redirect if we've confirmed there's no user after loading is complete
+    if (!loading) {
+      setIsInitialized(true);
+      if (!user) {
+        navigate('/auth');
+      }
     }
-  }, [user, navigate]);
+  }, [user, navigate, loading]);
+
+  // Don't render anything until we've checked auth status
+  if (loading || !isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
 
   if (!user) {
     return null;
@@ -26,8 +40,8 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <NavBar />
       
-      <main className="flex-1 container px-4 py-8 md:px-6">
-        <div className="flex items-center justify-between mb-8">
+      <main className="flex-1 container px-4 py-8 md:px-6 mt-16">
+        <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <Button variant="outline" onClick={signOut}>
             <LogOut className="mr-2 h-4 w-4" />

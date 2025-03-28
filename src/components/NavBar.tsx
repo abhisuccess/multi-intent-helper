@@ -42,10 +42,10 @@ const NavBar = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-md bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-medium">MI</span>
+            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-medium text-xs">MI</span>
             </div>
-            <span className="text-xl font-medium">Multi-Intent AI</span>
+            <span className="text-lg font-medium">Multi-Intent AI</span>
           </Link>
         </div>
         
